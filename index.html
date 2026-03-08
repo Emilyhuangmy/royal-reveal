@@ -1306,9 +1306,9 @@
       // Build share text
       let shareText;
       if (isGameOver) {
-        shareText = `👑 Royal Reveal\n\nI reached Level ${level}\nScore: ${score}\nPlay here 👇\n\nCan you beat me?\nhttps://royal-reveal.emilyhuangmy.workers.dev`;
+        shareText = `👑 Royal Reveal\n\nI reached Level ${level}\nScore: ${score}\n\nThink you can beat me?\nPlay instantly 👇\nhttps://royal-reveal.emilyhuangmy.workers.dev\n(No download needed)`;
       } else {
-        shareText = `👑 Royal Reveal\n\nI'm on Level ${level} — can you beat me?\nPlay here 👇\nhttps://royal-reveal.emilyhuangmy.workers.dev`;
+        shareText = `👑 Royal Reveal\n\nI'm on Level ${level}\nCan you beat me?\nPlay here 👇\nhttps://royal-reveal.emilyhuangmy.workers.dev`;
       }
       document.getElementById('share-text-block').textContent = shareText;
 
@@ -1396,7 +1396,7 @@
         // URL
         ctx.fillStyle = 'rgba(244,208,147,0.3)';
         ctx.font = '34px serif';
-        ctx.fillText('royalreveal.pages.dev', W/2, 990);
+        ctx.fillText('royal-reveal.emilyhuangmy.workers.dev', W/2, 990);
 
         canvas.toBlob(resolve, 'image/png');
       });
