@@ -2,22 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Royal Reveal: Can you beat me?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Royal Reveal - Level Challenge</title>
+
+  <!-- PWA / fullscreen meta -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Royal Reveal">
+  <meta name="theme-color" content="#0d0600">
+
+  <!-- Open Graph (Facebook, Discord, Reddit, WhatsApp) -->
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://royal-reveal.emilyhuangmy.workers.dev">
+  <meta property="og:title"       content="Royal Reveal — Can you track the royal card?">
+  <meta property="og:description" content="A cinematic card-shuffle challenge. Pick the right royal, beat every level. Think you're fast enough?">
+  <meta property="og:image"       content="images/og-preview.jpg">
+  <meta property="og:image:width"  content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Twitter / X card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:url"         content="https://royal-reveal.emilyhuangmy.workers.dev">
+  <meta name="twitter:title"       content="Royal Reveal — Can you track the royal card?">
+  <meta name="twitter:description" content="A cinematic card-shuffle challenge. Pick the right royal, beat every level. Think you're fast enough?">
+  <meta name="twitter:image"       content="images/og-preview.jpg">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Lora:ital@1&display=swap');
   
+    html {
+      height: 100%;
+      overflow: hidden;
+      background: #0d0600; /* fallback colour while bg image loads */
+    }
+
     body {
       min-height: 100vh;
+      min-height: 100dvh; /* dynamic viewport height — hides mobile browser chrome */
+      width: 100%;
       background-image:
         radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%),
         url('images/stage-bg-2.jpg');
       background-size: cover;
-      background-position: center;
+      background-position: center center;
       background-repeat: no-repeat;
+      background-attachment: scroll; /* 'fixed' breaks on iOS Safari — scroll is safe */
       color: #f4d093;
       font-family: 'Lora', serif;
       display: flex;
@@ -27,6 +59,12 @@
       padding: 10px;
       margin: 0;
       overflow: hidden;
+      box-sizing: border-box;
+      /* Safe-area insets for notched phones */
+      padding-top: env(safe-area-inset-top, 10px);
+      padding-bottom: env(safe-area-inset-bottom, 10px);
+      padding-left: env(safe-area-inset-left, 10px);
+      padding-right: env(safe-area-inset-right, 10px);
     }
   
     .glass-panel {
@@ -2256,12 +2294,8 @@
     // ---- Init ----
     sessionStartTime = Date.now();
 
-    // Show profile modal only on first visit (no profileSetup flag)
-    if (!currentPlayer.profileSetup) {
-      showProfileModal(false);
-    } else {
-      document.getElementById('profile-modal').classList.add('hidden');
-    }
+    // Profile modal is always hidden on load — player opens it via the badge
+    document.getElementById('profile-modal').classList.add('hidden');
     updatePlayerBadge();
     createBoard();
     if (isDev) updateDebugOverlay();
