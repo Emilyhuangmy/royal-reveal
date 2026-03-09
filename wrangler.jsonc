@@ -17,7 +17,13 @@
 		{
 			"binding": "DB",
 			"database_name": "royal-reveal-leaderboard",
-			"database_id": "db3507b2-7b9a-4986-85c2-caf2f25cdb43"
+			"database_id": "576df297-b1f1-4a5a-9d73-07397664382b"
+		},
+		{
+			"binding": "royal_reveal_leaderboard",
+			"database_name": "royal-reveal-leaderboard",
+			"database_id": "576df297-b1f1-4a5a-9d73-07397664382b",
+			"remote": true
 		}
 	]
 }
