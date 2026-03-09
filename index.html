@@ -1183,19 +1183,21 @@
 
         <!-- Tab: Weekly -->
         <div id="tab-weekly" class="tab-panel">
-          <div class="lb-coming-soon">
-            <div class="lb-coming-icon">🌐</div>
-            <div class="lb-coming-title">Coming Soon</div>
-            <div class="lb-coming-sub">Global leaderboard coming soon</div>
+          <div id="lb-weekly-content">
+            <div class="lb-coming-soon">
+              <div class="lb-coming-icon">🌐</div>
+              <div class="lb-coming-title">Loading…</div>
+            </div>
           </div>
         </div>
 
         <!-- Tab: All-Time -->
         <div id="tab-alltime" class="tab-panel">
-          <div class="lb-coming-soon">
-            <div class="lb-coming-icon">🏆</div>
-            <div class="lb-coming-title">Coming Soon</div>
-            <div class="lb-coming-sub">Global leaderboard coming soon</div>
+          <div id="lb-alltime-content">
+            <div class="lb-coming-soon">
+              <div class="lb-coming-icon">🏆</div>
+              <div class="lb-coming-title">Loading…</div>
+            </div>
           </div>
         </div>
 
@@ -2001,6 +2003,9 @@
 
       switchTab('my-result');
       document.getElementById('result-modal').classList.add('open');
+
+      // Fire-and-forget: submit score to global leaderboard
+      submitScore(finalScore, currentStage).catch(() => {});
     }
 
     function switchTab(name) {
@@ -2010,7 +2015,13 @@
 
     // Tab click handlers
     document.querySelectorAll('.result-tab').forEach(btn => {
-      btn.addEventListener('click', () => { playSFX('click'); switchTab(btn.dataset.tab); });
+      btn.addEventListener('click', () => {
+        playSFX('click');
+        switchTab(btn.dataset.tab);
+        if (btn.dataset.tab === 'weekly' || btn.dataset.tab === 'alltime') {
+          fetchAndRenderLeaderboard(btn.dataset.tab);
+        }
+      });
     });
 
     // ---- Victory sequence helpers ----
@@ -2290,6 +2301,82 @@
       playSFX('click');
       showProfileModal(true);
     });
+
+    // ---- Global Leaderboard ----
+
+    async function submitScore(score, level) {
+      const p = getOrCreatePlayer();
+      await fetch('/api/scores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          playerId: p.playerId,
+          displayName: p.displayName,
+          score,
+          level
+        })
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    async function fetchAndRenderLeaderboard(type) {
+      const contentId = type === 'weekly' ? 'lb-weekly-content' : 'lb-alltime-content';
+      const icon = type === 'weekly' ? '🌐' : '🏆';
+      const el = document.getElementById(contentId);
+
+      el.innerHTML = `<div class="lb-coming-soon"><div class="lb-coming-icon">${icon}</div><div class="lb-coming-title">Loading…</div></div>`;
+
+      try {
+        const res = await fetch(`/api/leaderboard?type=${type}&limit=50`);
+        if (!res.ok) throw new Error('fetch failed');
+        const data = await res.json();
+        const entries = data.entries || [];
+
+        if (!entries.length) {
+          el.innerHTML = `<div class="lb-empty">No entries yet — be the first!</div>`;
+          return;
+        }
+
+        const playerId = currentPlayer.playerId;
+        let html = '';
+
+        entries.slice(0, 10).forEach((e, i) => {
+          const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`;
+          const isCur = e.player_id === playerId;
+          html += `<div class="lb-row${isCur ? ' current-player' : ''}">
+            <span class="lb-rank">${medal}</span>
+            <span class="lb-name">${escapeHtml(e.display_name)}${isCur ? ' ◀' : ''}</span>
+            <span class="lb-score">${e.score}</span>
+          </div>`;
+        });
+
+        // Show player's own rank when outside top 10
+        const playerIdx = entries.findIndex(e => e.player_id === playerId);
+        if (playerIdx >= 10) {
+          const e = entries[playerIdx];
+          html += `<div class="lb-your-rank">
+            <span class="lb-rank">#${playerIdx + 1}</span>
+            <span class="lb-name">You (${escapeHtml(e.display_name)})</span>
+            <span class="lb-score">${e.score}</span>
+          </div>`;
+        }
+
+        el.innerHTML = html;
+      } catch {
+        el.innerHTML = `<div class="lb-coming-soon">
+          <div class="lb-coming-icon">⚠️</div>
+          <div class="lb-coming-title">Could not load</div>
+          <div class="lb-coming-sub">Check your connection and try again</div>
+        </div>`;
+      }
+    }
 
     // ---- Init ----
     sessionStartTime = Date.now();

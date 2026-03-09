@@ -1,14 +1,23 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "royal-reveal",
-  "compatibility_date": "2025-09-27",
-  "observability": {
-    "enabled": true
-  },
-  "assets": {
-    "directory": "."
-  },
-  "compatibility_flags": [
-    "nodejs_compat"
-  ]
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "royal-reveal",
+	"main": "worker.js",
+	"compatibility_date": "2025-09-27",
+	"observability": {
+		"enabled": true
+	},
+	"assets": {
+		"directory": ".",
+		"binding": "ASSETS"
+	},
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "royal-reveal-leaderboard",
+			"database_id": "db3507b2-7b9a-4986-85c2-caf2f25cdb43"
+		}
+	]
 }

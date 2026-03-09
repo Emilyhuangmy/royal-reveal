@@ -1,0 +1,38 @@
+---
+description: Royal Reveal 排行榜与后端接入约定
+globs: index.html
+alwaysApply: false
+---
+
+# 排行榜与后端规则
+
+## 后端选型
+
+- **首选 Cloudflare D1**（SQL 数据库）实现在线排行榜，与现有 Workers 部署在同一平台，不额外依赖 Supabase 或第三方服务。
+- 如未来需要账号体系、OAuth 登录或后台管理，再评估迁至 Supabase。
+
+## 数据结构
+
+排行榜记录必须包含以下字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `playerId` | TEXT | 客户端本地生成的唯一 ID |
+| `displayName` | TEXT | 玩家昵称 |
+| `score` | INTEGER | 最终分数 |
+| `level` | INTEGER | 到达的最高关卡 |
+| `createdAt` | INTEGER | Unix 时间戳（ms） |
+
+## API 设计
+
+- 接口最小化，仅保留两个端点：
+  - `POST /scores` — 提交成绩
+  - `GET /leaderboard?type=weekly|alltime&limit=50` — 读取榜单
+- 需做基础防刷：同一 `playerId` 每分钟最多提交 3 次；同一 `playerId` 只保留最高分。
+
+## 前端改动约束
+
+- **降级策略**：网络请求失败时，自动回落到现有 `localStorage` 本地榜单（键名 `rr_leaderboard_v2`），游戏核心流程不受影响。
+- 尽量复用现有 `#tab-weekly`、`#tab-alltime` UI 容器，替换数据来源，不大幅重写 HTML 结构。
+- 提交成绩的请求在 `showResultScreen()` 调用时异步发送（`fire-and-forget`），不阻塞弹窗显示。
+- 读取榜单时显示 loading 态，失败时显示友好的错误文案（与现有 `lb-coming-soon` 样式一致）。
