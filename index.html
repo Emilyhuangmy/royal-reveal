@@ -475,6 +475,14 @@
       margin-bottom: 24px;
       font-family: 'Cinzel', serif;
     }
+    .result-empty-msg {
+      font-family: 'Lora', serif;
+      font-size: 0.9rem;
+      color: rgba(244,208,147,0.7);
+      font-style: italic;
+      margin: 0;
+      padding: 8px 0;
+    }
     .leaderboard-section {
       margin-top: 22px;
       text-align: left;
@@ -1219,6 +1227,10 @@
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Settings
       </button>
+      <button class="icon-btn" id="leaderboard-btn">
+        <svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47 1-1 1H8M14 14.66V17c0 .55.47 1 1 1h1M12 2v4M6 4l2 4 2-2 2 4 2-2 2 4"/></svg>
+        Leaderboard
+      </button>
       <button class="icon-btn" id="share-btn">
         <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         Challenge Your Friend
@@ -1495,6 +1507,10 @@
 
     document.getElementById('share-btn').addEventListener('click', () => openShareModal(phase === 'end'));
     document.getElementById('result-share-btn').addEventListener('click', () => openShareModal(true));
+    document.getElementById('leaderboard-btn').addEventListener('click', () => {
+      playSFX('click');
+      openLeaderboardModal();
+    });
     
     const isDev = typeof location !== 'undefined' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || (location.search && location.search.includes('dev')));
 
@@ -2011,6 +2027,36 @@
     function switchTab(name) {
       document.querySelectorAll('.result-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+    }
+
+    function openLeaderboardModal() {
+      const existingBadge = document.getElementById('result-new-best-badge');
+      if (existingBadge) existingBadge.remove();
+      document.getElementById('result-title').innerText = 'Leaderboard';
+      document.getElementById('result-subtitle').innerText = 'Your scores & rankings';
+
+      const p = getOrCreatePlayer();
+      const hasPlayed = (p.bestScore || 0) > 0 || (p.gamesPlayed || 0) > 0;
+
+      if (!hasPlayed) {
+        document.getElementById('result-score-big').innerText = '—';
+        document.getElementById('result-score-label').innerText = 'No score yet';
+        document.getElementById('result-stats').innerHTML = '<p class="result-empty-msg">Play a round to see your result.</p>';
+        document.getElementById('result-ranks').innerHTML = '';
+      } else {
+        document.getElementById('result-score-big').innerText = String(p.bestScore || 0);
+        document.getElementById('result-score-label').innerText = 'BEST SCORE';
+        const level = Math.min(p.highestLevelReached || 1, MAX_STAGE);
+        document.getElementById('result-stats').innerHTML = `
+          <div class="result-stat"><span>Highest Level Reached</span><span>${level} / ${MAX_STAGE}</span></div>
+          <div class="result-stat"><span>Games Played</span><span>${p.gamesPlayed || 0}</span></div>
+          <div class="result-stat"><span>Personal Best</span><span>${p.bestScore || 0}</span></div>
+        `;
+        document.getElementById('result-ranks').innerHTML = '';
+      }
+
+      switchTab('my-result');
+      document.getElementById('result-modal').classList.add('open');
     }
 
     // Tab click handlers
