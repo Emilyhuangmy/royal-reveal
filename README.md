@@ -30,6 +30,15 @@ Apply the schema to the new remote database:
 npx wrangler d1 execute royal-reveal-leaderboard --remote --file=./schema.sql
 ```
 
+If you already have a database from an older schema, run any of these that apply (then run the full `schema.sql` to add `profiles` if missing):
+
+```bash
+npx wrangler d1 execute royal-reveal-leaderboard --remote --command "ALTER TABLE scores ADD COLUMN avatar TEXT;"
+npx wrangler d1 execute royal-reveal-leaderboard --remote --command "ALTER TABLE scores ADD COLUMN country TEXT;"
+# Add profiles table for stored display name/avatar/country:
+npx wrangler d1 execute royal-reveal-leaderboard --remote --file=./schema.sql
+```
+
 To run the same schema against a **local** D1 (for `wrangler dev`):
 
 ```bash

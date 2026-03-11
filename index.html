@@ -14,7 +14,7 @@
 
   <!-- Open Graph (Facebook, Discord, Reddit, WhatsApp) -->
   <meta property="og:type"        content="website">
-  <meta property="og:url"         content="https://royal-reveal.emilyhuangmy.workers.dev">
+  <meta property="og:url"         content="https://games.emilyhuangmy.com/">
   <meta property="og:title"       content="Royal Reveal — Can you track the royal card?">
   <meta property="og:description" content="A cinematic card-shuffle challenge. Pick the right royal, beat every level. Think you're fast enough?">
   <meta property="og:image"       content="images/og-preview.jpg">
@@ -23,7 +23,7 @@
 
   <!-- Twitter / X card -->
   <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:url"         content="https://royal-reveal.emilyhuangmy.workers.dev">
+  <meta name="twitter:url"         content="https://games.emilyhuangmy.com/">
   <meta name="twitter:title"       content="Royal Reveal — Can you track the royal card?">
   <meta name="twitter:description" content="A cinematic card-shuffle challenge. Pick the right royal, beat every level. Think you're fast enough?">
   <meta name="twitter:image"       content="images/og-preview.jpg">
@@ -124,6 +124,24 @@
       top: 0; left: 0; width: 100%; height: 100%;
       pointer-events: none;
       z-index: 0;
+    }
+
+    #players-today-badge {
+      position: absolute;
+      bottom: 60px;
+      left: 18px;
+      z-index: 10;
+      padding: 6px 14px;
+      font-family: 'Lora', serif;
+      font-size: 0.75rem;
+      color: rgba(244,208,147,0.9);
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(212,175,55,0.25);
+      border-radius: 20px;
+      white-space: nowrap;
+      pointer-events: none;
     }
   
     .ui-header, .title-area, #flip-count, #game-board, #action-btn {
@@ -425,6 +443,7 @@
     }
     #result-modal.open { display: flex; }
     #result-inner {
+      position: relative;
       background: rgba(20,10,5,0.95);
       border: 1px solid rgba(212,175,55,0.5);
       border-radius: 20px;
@@ -510,8 +529,13 @@
       background: rgba(212,175,55,0.15);
       border: 1px solid rgba(212,175,55,0.3);
     }
-    .lb-rank { font-family: 'Cinzel', serif; color: #d4af37; width: 20px; text-align: center; }
-    .lb-name { flex: 1; }
+    .lb-rank { font-family: 'Cinzel', serif; color: #d4af37; width: 24px; text-align: center; flex-shrink: 0; }
+    .lb-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: rgba(212,175,55,0.1); flex-shrink: 0; }
+    .lb-avatar-placeholder { width: 28px; height: 28px; border-radius: 50%; background: rgba(212,175,55,0.15); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+    .lb-name { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
+    .lb-flag { font-size: 1.1rem; flex-shrink: 0; }
+    .lb-flag-global { display: inline-flex; align-items: center; justify-content: center; color: #d4af37; opacity: 0.85; }
+    .lb-flag-global svg { width: 1.1em; height: 1.1em; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .lb-score { font-family: 'Cinzel', serif; }
     /* Tab system */
     #result-tabs {
@@ -574,13 +598,13 @@
     .result-btn {
       background: linear-gradient(145deg, #8b0000, #500000);
       border: 2px solid #d4af37;
-      padding: 13px 36px;
+      padding: 16px 40px;
       font-family: 'Cinzel', serif;
       color: #f4d093;
       border-radius: 12px;
       cursor: pointer;
       margin-top: 20px;
-      font-size: 1rem;
+      font-size: 1.05rem;
       transition: transform 0.2s, box-shadow 0.2s;
       width: 100%;
     }
@@ -600,6 +624,7 @@
     }
     #profile-modal.hidden { display: none; }
     #profile-inner {
+      position: relative;
       background: rgba(18,8,4,0.97);
       border: 1px solid rgba(212,175,55,0.5);
       border-radius: 20px;
@@ -609,6 +634,27 @@
       text-align: center;
       box-shadow: 0 0 60px rgba(212,175,55,0.15);
     }
+    .modal-close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(212,175,55,0.5);
+      background: rgba(0,0,0,0.4);
+      color: #f4d093;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: background 0.2s, color 0.2s;
+      z-index: 1;
+    }
+    .modal-close-btn:hover { background: rgba(212,175,55,0.2); color: #d4af37; }
+    .modal-close-btn:active { transform: scale(0.95); }
+    .modal-close-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
     #profile-title {
       font-family: 'Cinzel', serif;
       font-size: 1.5rem;
@@ -673,15 +719,61 @@
     }
     #profile-name-field:focus { border-color: #d4af37; }
     #profile-name-field::placeholder { opacity: 0.4; }
+    .profile-country-wrap {
+      position: relative;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    #profile-country-field {
+      width: 100%;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(212,175,55,0.4);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      color: #f4d093;
+      outline: none;
+      box-sizing: border-box;
+    }
+    #profile-country-field:focus { border-color: #d4af37; }
+    #profile-country-field::placeholder { opacity: 0.4; }
+    .profile-country-dropdown {
+      display: none;
+      position: absolute;
+      left: 0; right: 0;
+      top: 100%;
+      margin-top: 4px;
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(18,8,4,0.98);
+      border: 1px solid rgba(212,175,55,0.5);
+      border-radius: 8px;
+      z-index: 10;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .profile-country-dropdown.open { display: block; }
+    .profile-country-option {
+      padding: 10px 14px;
+      font-family: 'Lora', serif;
+      font-size: 0.88rem;
+      color: #f4d093;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .profile-country-option:hover { background: rgba(212,175,55,0.15); }
+    .profile-country-option .flag { font-size: 1.2rem; }
     #profile-start-btn {
       background: linear-gradient(145deg, #8b0000, #500000);
       border: 2px solid #d4af37;
-      padding: 13px 36px;
+      padding: 16px 40px;
       font-family: 'Cinzel', serif;
       color: #f4d093;
       border-radius: 12px;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 1.05rem;
       transition: transform 0.2s, box-shadow 0.2s;
       width: 100%;
       letter-spacing: 1px;
@@ -710,7 +802,18 @@
     .lb-your-rank .lb-rank { color: #d4af37; }
     .lb-your-rank .lb-name { flex: 1; color: #f4d093; }
     .lb-your-rank .lb-score { color: #d4af37; }
-  
+    .lb-tab-scroll {
+      max-height: 280px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .lb-ellipsis {
+      text-align: center;
+      padding: 6px 0;
+      font-size: 0.8rem;
+      color: rgba(244,208,147,0.4);
+    }
+
     @keyframes softPulse {
       0% { box-shadow: 0 0 10px 5px rgba(212, 175, 55, 0.5); }
       50% { box-shadow: 0 0 15px 8px rgba(212, 175, 55, 0.7); }
@@ -815,9 +918,11 @@
             margin-top: 5px !important;
         }
         
-        #bottom-btns { bottom: 6px !important; left: 8px !important; gap: 8px !important; }
-        .icon-btn { height: 28px !important; padding: 0 10px !important; font-size: 0.62rem !important; }
-        .icon-btn svg { width: 11px !important; height: 11px !important; }
+        #bottom-btns { bottom: 6px !important; left: 8px !important; gap: 6px !important; }
+        #players-today-badge { bottom: 44px !important; left: 8px !important; }
+        .icon-btn { height: 32px !important; width: 32px !important; min-width: 32px !important; padding: 0 !important; border-radius: 50% !important; justify-content: center !important; }
+        .icon-btn .icon-btn-text { display: none !important; }
+        .icon-btn svg { width: 14px !important; height: 14px !important; margin: 0 !important; }
         
         #settings-menu {
             bottom: 40px !important;
@@ -894,6 +999,7 @@
     }
     #share-modal.open { display: flex; }
     #share-inner {
+      position: relative;
       background: rgba(18,8,4,0.97);
       border: 1px solid rgba(212,175,55,0.5);
       border-radius: 20px;
@@ -992,14 +1098,14 @@
     }
     .share-action-btn {
       flex: 1;
-      min-width: 100px;
+      min-width: 120px;
       background: rgba(0,0,0,0.4);
       border: 1px solid #d4af37;
       color: #f4d093;
       font-family: 'Cinzel', serif;
-      font-size: 0.75rem;
+      font-size: 0.85rem;
       letter-spacing: 0.5px;
-      padding: 10px 12px;
+      padding: 14px 18px;
       border-radius: 10px;
       cursor: pointer;
       transition: background 0.2s, transform 0.15s;
@@ -1012,11 +1118,6 @@
     .share-action-btn:active { transform: scale(0.96); }
     .share-action-btn.copied { border-color: #22c55e; color: #22c55e; }
     .share-action-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-    .share-close-btn {
-      border-color: rgba(212,175,55,0.3);
-      color: rgba(244,208,147,0.5);
-    }
-    .share-close-btn:hover { background: rgba(212,175,55,0.08); color: #f4d093; }
     /* ---- Mobile typography: overlays only (max-width: 768px) ---- */
     @media (max-width: 768px) {
       /* Result modal — main title (GAME OVER / Victory) */
@@ -1086,6 +1187,7 @@
   <!-- Player Profile Modal (first visit) -->
   <div id="profile-modal">
     <div id="profile-inner">
+      <button type="button" class="modal-close-btn" id="profile-modal-close" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       <div id="profile-title">⚜ Welcome ⚜</div>
       <div id="profile-subtitle">Set up your identity before the game begins.</div>
       <div id="avatar-wrapper" title="Upload avatar">
@@ -1094,12 +1196,17 @@
       </div>
       <input type="file" id="avatar-file-input" accept="image/*">
       <input type="text" id="profile-name-field" maxlength="24" placeholder="Enter your name…">
+      <div class="profile-country-wrap">
+        <input type="text" id="profile-country-field" placeholder="Search country…" autocomplete="off">
+        <div id="profile-country-dropdown" class="profile-country-dropdown" role="listbox"></div>
+      </div>
       <button id="profile-start-btn">Start Game</button>
     </div>
   </div>
 
   <div class="glass-panel">
     <div class="particles" id="particles"></div>
+    <div id="players-today-badge" aria-live="polite">…</div>
 
     <!-- 3-column top HUD -->
     <div class="ui-header">
@@ -1132,6 +1239,7 @@
     <!-- Share Modal -->
     <div id="share-modal">
       <div id="share-inner">
+        <button type="button" class="modal-close-btn" id="share-modal-close" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         <div id="share-modal-title">⚔ Challenge Your Friend ⚔</div>
 
         <!-- Preview card (rendered in JS) -->
@@ -1157,10 +1265,6 @@
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
             Copy Image
           </button>
-          <button class="share-action-btn share-close-btn" id="share-modal-close">
-            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            Close
-          </button>
         </div>
       </div>
     </div>
@@ -1171,14 +1275,16 @@
     <!-- Result Modal -->
     <div id="result-modal">
       <div id="result-inner">
+        <button type="button" class="modal-close-btn" id="result-modal-close" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         <div id="result-title">GAME OVER</div>
         <div id="result-subtitle">The cards have spoken.</div>
 
         <!-- Tab buttons -->
         <div id="result-tabs">
           <button class="result-tab active" data-tab="my-result">My Result</button>
+          <button class="result-tab" data-tab="daily">Daily</button>
           <button class="result-tab" data-tab="weekly">Weekly</button>
-          <button class="result-tab" data-tab="alltime">All-Time</button>
+          <button class="result-tab" data-tab="alltime">All Time</button>
         </div>
 
         <!-- Tab: My Result -->
@@ -1189,9 +1295,19 @@
           <div id="result-ranks" style="margin-top:10px;"></div>
         </div>
 
+        <!-- Tab: Daily -->
+        <div id="tab-daily" class="tab-panel">
+          <div id="lb-daily-content" class="lb-tab-scroll">
+            <div class="lb-coming-soon">
+              <div class="lb-coming-icon">📅</div>
+              <div class="lb-coming-title">Loading…</div>
+            </div>
+          </div>
+        </div>
+
         <!-- Tab: Weekly -->
         <div id="tab-weekly" class="tab-panel">
-          <div id="lb-weekly-content">
+          <div id="lb-weekly-content" class="lb-tab-scroll">
             <div class="lb-coming-soon">
               <div class="lb-coming-icon">🌐</div>
               <div class="lb-coming-title">Loading…</div>
@@ -1199,9 +1315,9 @@
           </div>
         </div>
 
-        <!-- Tab: All-Time -->
+        <!-- Tab: All Time -->
         <div id="tab-alltime" class="tab-panel">
-          <div id="lb-alltime-content">
+          <div id="lb-alltime-content" class="lb-tab-scroll">
             <div class="lb-coming-soon">
               <div class="lb-coming-icon">🏆</div>
               <div class="lb-coming-title">Loading…</div>
@@ -1223,17 +1339,17 @@
 
     <!-- Bottom buttons row — bottom left -->
     <div id="bottom-btns">
-      <button class="icon-btn" id="settings-btn">
+      <button class="icon-btn" id="settings-btn" aria-label="Settings">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Settings
+        <span class="icon-btn-text">Settings</span>
       </button>
-      <button class="icon-btn" id="leaderboard-btn">
+      <button class="icon-btn" id="leaderboard-btn" aria-label="Scores">
         <svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47 1-1 1H8M14 14.66V17c0 .55.47 1 1 1h1M12 2v4M6 4l2 4 2-2 2 4 2-2 2 4"/></svg>
-        Leaderboard
+        <span class="icon-btn-text">Scores</span>
       </button>
-      <button class="icon-btn" id="share-btn">
+      <button class="icon-btn" id="share-btn" aria-label="Share">
         <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        Challenge Your Friend
+        <span class="icon-btn-text">Share</span>
       </button>
     </div>
 
@@ -1327,9 +1443,31 @@
     });
     settingsMenu.addEventListener('click', (e) => e.stopPropagation());
 
-    // Share modal: click the dark backdrop to close (but not the inner panel)
+    function closeResultModal() {
+      document.getElementById('result-modal').classList.remove('open');
+      const actionBtn = document.getElementById('action-btn');
+      actionBtn.innerText = lastGameEndWasVictory ? 'Another Round' : 'One More Try';
+      actionBtn.style.display = 'block';
+    }
+
+    document.getElementById('result-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('result-modal')) { playSFX('click'); closeResultModal(); }
+    });
+    document.getElementById('result-modal-close').addEventListener('click', () => { playSFX('click'); closeResultModal(); });
+
     document.getElementById('share-modal').addEventListener('click', (e) => {
-      if (e.target === document.getElementById('share-modal')) closeShareModal();
+      if (e.target === document.getElementById('share-modal')) { playSFX('click'); closeShareModal(); }
+    });
+    document.getElementById('profile-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('profile-modal')) { playSFX('click'); hideProfileModal(); }
+    });
+    document.getElementById('profile-modal-close').addEventListener('click', () => { playSFX('click'); hideProfileModal(); });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (document.getElementById('result-modal').classList.contains('open')) { closeResultModal(); return; }
+      if (document.getElementById('share-modal').classList.contains('open')) { closeShareModal(); return; }
+      if (!document.getElementById('profile-modal').classList.contains('hidden')) { hideProfileModal(); return; }
     });
 
     musicSlider.addEventListener('input', (e) => {
@@ -1358,9 +1496,9 @@
       // Build share text
       let shareText;
       if (isGameOver) {
-        shareText = `👑 Royal Reveal\n\nI reached Level ${level}\nScore: ${score}\n\nThink you can beat me?\nPlay instantly 👇\nhttps://royal-reveal.emilyhuangmy.workers.dev\n(No download needed)`;
+        shareText = `👑 Royal Reveal\n\nI reached Level ${level}\nScore: ${score}\n\nThink you can beat me?\nPlay instantly 👇\nhttps://games.emilyhuangmy.com/\n(No download needed)`;
       } else {
-        shareText = `👑 Royal Reveal\n\nI'm on Level ${level}\nCan you beat me?\nPlay here 👇\nhttps://royal-reveal.emilyhuangmy.workers.dev`;
+        shareText = `👑 Royal Reveal\n\nI'm on Level ${level}\nCan you beat me?\nPlay here 👇\nhttps://games.emilyhuangmy.com/`;
       }
       document.getElementById('share-text-block').textContent = shareText;
 
@@ -1448,7 +1586,7 @@
         // URL
         ctx.fillStyle = 'rgba(244,208,147,0.3)';
         ctx.font = '34px serif';
-        ctx.fillText('royal-reveal.emilyhuangmy.workers.dev', W/2, 990);
+        ctx.fillText('games.emilyhuangmy.com', W/2, 990);
 
         canvas.toBlob(resolve, 'image/png');
       });
@@ -1562,6 +1700,7 @@
         playerId: id,
         displayName: 'Player-' + Math.floor(1000 + Math.random() * 9000),
         avatar: null,
+        country: null,
         gamesPlayed: 0,
         highestLevelReached: 1,
         bestScore: 0,
@@ -1639,6 +1778,7 @@
 
     let targetName = null;
     let phase = "select";
+    let lastGameEndWasVictory = false;
     let flipsUsed = 0;
     let maxFlips = 1;
 
@@ -1939,6 +2079,7 @@
     }
 
     function showResultScreen(isVictory) {
+      lastGameEndWasVictory = isVictory;
       const finalScore = computeFinalScore();
       const p = getOrCreatePlayer();
       const prevBest = p.bestScore || 0;
@@ -2057,6 +2198,7 @@
 
       switchTab('my-result');
       document.getElementById('result-modal').classList.add('open');
+      updatePlayersTodayBadge();
     }
 
     // Tab click handlers
@@ -2064,7 +2206,7 @@
       btn.addEventListener('click', () => {
         playSFX('click');
         switchTab(btn.dataset.tab);
-        if (btn.dataset.tab === 'weekly' || btn.dataset.tab === 'alltime') {
+        if (btn.dataset.tab === 'daily' || btn.dataset.tab === 'weekly' || btn.dataset.tab === 'alltime') {
           fetchAndRenderLeaderboard(btn.dataset.tab);
         }
       });
@@ -2259,6 +2401,20 @@
       else if (btn.innerText === "Retry Level") {
           createBoard();
       }
+      else if (btn.innerText === "One More Try" || btn.innerText === "Another Round") {
+          btn.style.display = "none";
+          hearts = MAX_HEARTS;
+          currentStage = 1;
+          consecutiveWins = 0;
+          maxConsecutiveWinsThisRun = 0;
+          sessionRoundData = [];
+          totalWrongPicks = 0;
+          sessionStartTime = Date.now();
+          nextDifficultyChange = '—';
+          updatePlayerBadge();
+          createBoard();
+          if (isDev) updateDebugOverlay();
+      }
     };
 
   document.getElementById('result-play-again').onclick = () => {
@@ -2290,13 +2446,21 @@
       }
     }
 
+    let COUNTRY_LIST = [];
+    function getCountryName(code) {
+      const c = COUNTRY_LIST.find(x => x.code === code);
+      return c ? c.name : '';
+    }
+
     // ---- Profile Modal ----
     function showProfileModal(forceShow) {
       const modal = document.getElementById('profile-modal');
       const nameField = document.getElementById('profile-name-field');
       const avatarPreview = document.getElementById('avatar-preview');
+      const countryWrap = document.querySelector('.profile-country-wrap');
+      const countryField = document.getElementById('profile-country-field');
+      const countryDropdown = document.getElementById('profile-country-dropdown');
 
-      // Pre-fill with current player data
       nameField.value = currentPlayer.displayName || '';
       nameField.placeholder = 'Player-' + Math.floor(1000 + Math.random() * 9000);
 
@@ -2305,6 +2469,9 @@
       } else {
         avatarPreview.innerHTML = '👤';
       }
+
+      countryField.value = getCountryName(currentPlayer.country) || '';
+      if (countryWrap) countryWrap.dataset.countryCode = currentPlayer.country || '';
 
       modal.classList.remove('hidden');
     }
@@ -2331,16 +2498,65 @@
       reader.readAsDataURL(file);
     });
 
-    document.getElementById('profile-start-btn').addEventListener('click', () => {
+    document.getElementById('profile-start-btn').addEventListener('click', async () => {
       playSFX('click');
       const nameField = document.getElementById('profile-name-field');
+      const countryWrap = document.querySelector('.profile-country-wrap');
       const name = nameField.value.trim() || nameField.placeholder || currentPlayer.displayName;
       const pendingAvatar = avatarWrapper.dataset.pendingAvatar || currentPlayer.avatar || null;
-      savePlayer({ displayName: name, avatar: pendingAvatar, profileSetup: true });
+      const countryCode = (countryWrap && countryWrap.dataset.countryCode) || null;
+      savePlayer({ displayName: name, avatar: pendingAvatar, country: countryCode || undefined, profileSetup: true });
       currentPlayer = getOrCreatePlayer();
+      try {
+        await fetch('/api/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            playerId: currentPlayer.playerId,
+            displayName: currentPlayer.displayName,
+            avatar: currentPlayer.avatar || null,
+            country: currentPlayer.country || null
+          })
+        });
+      } catch (_) {}
       updatePlayerBadge();
       hideProfileModal();
     });
+
+    (function initCountrySelector() {
+      const countryField = document.getElementById('profile-country-field');
+      const countryDropdown = document.getElementById('profile-country-dropdown');
+      const countryWrap = document.querySelector('.profile-country-wrap');
+      if (!countryField || !countryDropdown) return;
+
+      fetch('countries.json')
+        .then(r => r.ok ? r.json() : [])
+        .then(arr => { COUNTRY_LIST = Array.isArray(arr) ? arr : []; })
+        .catch(() => { COUNTRY_LIST = []; });
+
+      function renderOptions(filter) {
+        const q = (filter || '').trim().toLowerCase();
+        const list = q ? COUNTRY_LIST.filter(c => c.name.toLowerCase().includes(q)) : COUNTRY_LIST;
+        countryDropdown.innerHTML = list.slice(0, 100).map(c => {
+          const flag = countryCodeToFlag(c.code);
+          return `<div class="profile-country-option" role="option" data-code="${escapeHtml(c.code)}"><span class="flag">${flag}</span>${escapeHtml(c.name)}</div>`;
+        }).join('');
+        countryDropdown.classList.toggle('open', list.length > 0);
+      }
+
+      countryField.addEventListener('focus', () => renderOptions(countryField.value));
+      countryField.addEventListener('input', () => renderOptions(countryField.value));
+      countryField.addEventListener('blur', () => setTimeout(() => countryDropdown.classList.remove('open'), 150));
+
+      countryDropdown.addEventListener('click', (e) => {
+        const opt = e.target.closest('.profile-country-option');
+        if (!opt) return;
+        const code = opt.dataset.code;
+        if (countryWrap) countryWrap.dataset.countryCode = code;
+        countryField.value = getCountryName(code) || '';
+        countryDropdown.classList.remove('open');
+      });
+    })();
 
     // Badge click re-opens profile
     document.getElementById('hud-player-badge').addEventListener('click', () => {
@@ -2358,10 +2574,18 @@
         body: JSON.stringify({
           playerId: p.playerId,
           displayName: p.displayName,
+          avatar: p.avatar || null,
+          country: p.country || null,
           score,
           level
         })
       });
+    }
+
+    function countryCodeToFlag(code) {
+      if (!code || code.length !== 2) return '';
+      const a = 0x1F1E6 - 65;
+      return String.fromCodePoint(...[...code.toUpperCase()].map(c => a + c.charCodeAt(0)));
     }
 
     function escapeHtml(str) {
@@ -2371,16 +2595,19 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
     }
+    function safeAttr(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    }
 
     async function fetchAndRenderLeaderboard(type) {
-      const contentId = type === 'weekly' ? 'lb-weekly-content' : 'lb-alltime-content';
-      const icon = type === 'weekly' ? '🌐' : '🏆';
+      const contentId = type === 'daily' ? 'lb-daily-content' : type === 'weekly' ? 'lb-weekly-content' : 'lb-alltime-content';
+      const icon = type === 'daily' ? '📅' : type === 'weekly' ? '🌐' : '🏆';
       const el = document.getElementById(contentId);
 
       el.innerHTML = `<div class="lb-coming-soon"><div class="lb-coming-icon">${icon}</div><div class="lb-coming-title">Loading…</div></div>`;
 
       try {
-        const res = await fetch(`/api/leaderboard?type=${type}&limit=50`);
+        const res = await fetch(`/api/leaderboard?type=${type}&limit=100`);
         if (!res.ok) throw new Error('fetch failed');
         const data = await res.json();
         const entries = data.entries || [];
@@ -2391,25 +2618,39 @@
         }
 
         const playerId = currentPlayer.playerId;
+        const top20 = entries.slice(0, 20);
+        const playerIdx = entries.findIndex(e => e.player_id === playerId);
         let html = '';
 
-        entries.slice(0, 10).forEach((e, i) => {
+        top20.forEach((e, i) => {
           const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`;
           const isCur = e.player_id === playerId;
+          const displayName = e.display_name || '';
+          const avatar = (e.avatar || e.Avatar || '').trim();
+          const country = (e.country || e.Country || '').trim().toUpperCase();
+          const avatarHtml = avatar ? `<img class="lb-avatar" src="${safeAttr(avatar)}" alt="" onerror="this.outerHTML='<span class=&quot;lb-avatar-placeholder&quot;>👤</span>'">` : '<span class="lb-avatar-placeholder">👤</span>';
+          const flagHtml = country && country.length === 2
+            ? `<span class="lb-flag" title="${escapeHtml(getCountryName(country) || country)}">${countryCodeToFlag(country)}</span>`
+            : '<span class="lb-flag lb-flag-global" title="No country set"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="10" ry="4"/><path d="M12 2v20"/></svg></span>';
           html += `<div class="lb-row${isCur ? ' current-player' : ''}">
             <span class="lb-rank">${medal}</span>
-            <span class="lb-name">${escapeHtml(e.display_name)}${isCur ? ' ◀' : ''}</span>
+            <span class="lb-name">${avatarHtml}<span>${escapeHtml(displayName)}${isCur ? ' ◀' : ''}</span>${flagHtml}</span>
             <span class="lb-score">${e.score}</span>
           </div>`;
         });
 
-        // Show player's own rank when outside top 10
-        const playerIdx = entries.findIndex(e => e.player_id === playerId);
-        if (playerIdx >= 10) {
+        if (playerIdx >= 20) {
           const e = entries[playerIdx];
-          html += `<div class="lb-your-rank">
-            <span class="lb-rank">#${playerIdx + 1}</span>
-            <span class="lb-name">You (${escapeHtml(e.display_name)})</span>
+          const displayName = e.display_name || '';
+          const avatar = (e.avatar || e.Avatar || '').trim();
+          const country = (e.country || e.Country || '').trim().toUpperCase();
+          const avatarHtml = avatar ? `<img class="lb-avatar" src="${safeAttr(avatar)}" alt="" onerror="this.outerHTML='<span class=&quot;lb-avatar-placeholder&quot;>👤</span>'">` : '<span class="lb-avatar-placeholder">👤</span>';
+          const flagHtml = country && country.length === 2
+            ? `<span class="lb-flag" title="${escapeHtml(getCountryName(country) || country)}">${countryCodeToFlag(country)}</span>`
+            : '<span class="lb-flag lb-flag-global" title="No country set"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="10" ry="4"/><path d="M12 2v20"/></svg></span>';
+          html += `<div class="lb-ellipsis">…</div><div class="lb-row lb-your-rank current-player">
+            <span class="lb-rank">${playerIdx + 1}</span>
+            <span class="lb-name">${avatarHtml}<span>You (${escapeHtml(displayName)})</span>${flagHtml}</span>
             <span class="lb-score">${e.score}</span>
           </div>`;
         }
@@ -2424,8 +2665,40 @@
       }
     }
 
+    function ordinal(n) {
+      if (n === 1) return '1st';
+      if (n === 2) return '2nd';
+      if (n === 3) return '3rd';
+      if (n >= 4 && n <= 20) return n + 'th';
+      return n + 'th';
+    }
+
+    async function updatePlayersTodayBadge() {
+      const el = document.getElementById('players-today-badge');
+      if (!el) return;
+      try {
+        const playerId = (currentPlayer && currentPlayer.playerId) ? encodeURIComponent(currentPlayer.playerId) : '';
+        const res = await fetch('/api/stats/today' + (playerId ? '?playerId=' + playerId : ''));
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const count = data.count != null ? Number(data.count) : 0;
+        const playerRank = data.playerRank != null ? Number(data.playerRank) : null;
+
+        if (count === 0) {
+          el.textContent = 'You are the first player today 👑';
+        } else if (playerRank >= 1 && playerRank <= 10) {
+          el.textContent = 'You are the ' + ordinal(playerRank) + ' player today';
+        } else {
+          el.textContent = count === 1 ? '1 player today' : count + ' players today';
+        }
+      } catch {
+        el.textContent = '';
+      }
+    }
+
     // ---- Init ----
     sessionStartTime = Date.now();
+    updatePlayersTodayBadge();
 
     // Profile modal is always hidden on load — player opens it via the badge
     document.getElementById('profile-modal').classList.add('hidden');
