@@ -69,7 +69,7 @@ async function handlePostScore(request, env) {
     return json({ error: 'Score or level out of range' }, 400);
   }
 
-  const avatarVal = typeof avatar === 'string' && avatar.length <= 200000 ? avatar : null;
+  const avatarVal = typeof avatar === 'string' && avatar.length <= 2097152 ? avatar : null;
   const countryVal = typeof country === 'string' && /^[A-Za-z]{2}$/.test(country) ? country.toUpperCase() : null;
 
   const now = Date.now();
@@ -121,7 +121,7 @@ async function handlePutProfile(request, env) {
     return json({ error: 'Missing or invalid playerId / displayName' }, 400);
   }
 
-  const avatarVal = typeof avatar === 'string' && avatar.length <= 200000 ? avatar : null;
+  const avatarVal = typeof avatar === 'string' && avatar.length <= 2097152 ? avatar : null;
   const countryVal = typeof country === 'string' && /^[A-Za-z]{2}$/.test(country) ? country.toUpperCase() : null;
   const now = Date.now();
 
@@ -212,7 +212,23 @@ async function handleGetLeaderboard(url, env) {
     entries = await getLeaderboardFallback(env, type, limit);
   }
 
-  return json({ ok: true, entries });
+  let total = 0;
+  try {
+    if (type === 'daily') {
+      const todayStart = startOfTodayUTC();
+      const row = await env.DB.prepare('SELECT COUNT(DISTINCT player_id) AS total FROM scores WHERE created_at >= ?').bind(todayStart).first();
+      total = (row && row.total != null) ? Number(row.total) : 0;
+    } else if (type === 'weekly') {
+      const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const row = await env.DB.prepare('SELECT COUNT(DISTINCT player_id) AS total FROM scores WHERE created_at >= ?').bind(weekAgo).first();
+      total = (row && row.total != null) ? Number(row.total) : 0;
+    } else {
+      const row = await env.DB.prepare('SELECT COUNT(DISTINCT player_id) AS total FROM scores').first();
+      total = (row && row.total != null) ? Number(row.total) : 0;
+    }
+  } catch (_) {}
+
+  return json({ ok: true, entries, total });
 }
 
 async function getLeaderboardFallback(env, type, limit) {

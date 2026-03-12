@@ -946,6 +946,35 @@
         }
       
         .selected-target { border: 2px solid #d4af37; box-shadow: 0 0 3px #d4af37;border-radius: 12px; }
+
+        /* --- Overlay UI: compact for mobile landscape --- */
+        #profile-inner { padding: 12px 18px 12px; }
+        #profile-title { font-size: 1rem; margin-bottom: 2px; }
+        #profile-subtitle { font-size: 0.72rem; margin-bottom: 10px; }
+        #profile-start-btn { font-size: 0.72rem; padding: 6px 18px; }
+
+        #result-inner { padding: 10px 14px 10px; max-height: 90vh; }
+        #result-title { font-size: 1rem; margin-bottom: 2px; }
+        #result-subtitle { font-size: 0.72rem; margin-bottom: 6px; }
+        #result-tabs { margin-bottom: 6px; gap: 0; }
+        .result-tab { font-size: 0.56rem; padding: 4px 1px 5px; letter-spacing: 0; }
+        #result-score-big { font-size: 1.5rem; margin: 10px 0 2px; }
+        #result-score-label { font-size: 0.58rem; margin-bottom: 8px; }
+        .result-stat { font-size: 0.68rem; padding: 4px 0; }
+        .leaderboard-title { font-size: 0.72rem; margin-bottom: 4px; }
+        .lb-tab-scroll { max-height: 160px; }
+        .lb-row { font-size: 0.68rem; padding: 4px 6px; }
+        .result-btn { font-size: 0.72rem; padding: 6px 16px !important; margin-top: 8px !important; }
+        #result-share-btn { padding: 6px 12px !important; }
+
+        #share-inner { padding: 12px 18px 12px; max-height: 90vh; }
+        #share-modal-title { font-size: 1rem !important; margin-bottom: 10px; }
+        .scp-crown { font-size: 1.5rem; }
+        .scp-title { font-size: 0.9rem; }
+        .scp-level, .scp-score { font-size: 0.78rem; }
+        .scp-challenge { font-size: 0.68rem; }
+        #share-text-block { font-size: 0.72rem; margin-bottom: 10px; }
+        .share-action-btn { font-size: 0.72rem; padding: 6px 12px !important; min-width: 80px !important; }
     }
     
     /* Creator credit — bottom right */
@@ -1121,11 +1150,11 @@
     /* ---- Mobile typography: overlays only (max-width: 768px) ---- */
     @media (max-width: 768px) {
       /* Result modal — main title (GAME OVER / Victory) */
-      #result-title          { font-size: 1.45rem; }
+      #result-title          { font-size: 0.8rem; }
       /* Result modal — italic subtitle */
-      #result-subtitle       { font-size: 0.82rem; }
+      #result-subtitle       { font-size: 0.72rem; }
       /* Result modal — big score number */
-      #result-score-big      { font-size: 2.25rem; }
+      #result-score-big      { font-size: 1rem; }
       /* Result modal — FINAL SCORE label */
       #result-score-label    { font-size: 0.68rem; }
       /* Result modal — stat rows */
@@ -1134,25 +1163,24 @@
       /* Result modal — tab buttons */
       .result-tab            { font-size: 0.7rem; }
       /* Result modal — leaderboard section */
-      .leaderboard-title     { font-size: 0.82rem; }
+      .leaderboard-title     { font-size: 0.8rem; }
       .lb-row                { font-size: 0.75rem; }
-      .lb-coming-title       { font-size: 0.9rem; }
+      .lb-coming-title       { font-size: 0.8rem; }
       .lb-coming-sub         { font-size: 0.75rem; }
-      /* Result modal — Play Again / Challenge buttons */
-      .result-btn            { font-size: 0.88rem; }
+      /* Result modal — Play Again / Share buttons */
+      .result-btn            { font-size: 0.88rem; padding: 10px 24px; margin-top: 12px; }
+      #result-share-btn      { padding: 10px 16px !important; }
 
-      /* Share (Challenge Your Friend) modal — main title */
-      #share-modal-title     { font-size: 1.1rem; }
-      /* Share card preview inside the modal */
-      .scp-crown             { font-size: 2rem; }
-      .scp-title             { font-size: 1.1rem; }
-      .scp-level             { font-size: 0.82rem; }
-      .scp-score             { font-size: 0.92rem; }
+      /* Share (Challenge Your Friend) modal — title same as other overlays, buttons match result buttons */
+      #share-inner           { padding: 16px 20px 14px; }
+      #share-modal-title     { font-size: 0.8rem; margin-bottom: 12px; }
+      .scp-crown             { font-size: 1rem; }
+      .scp-title             { font-size: 0.8rem; }
+      .scp-level             { font-size: 0.72rem; }
+      .scp-score             { font-size: 0.72rem; }
       .scp-challenge         { font-size: 0.75rem; }
-      /* Share copyable text block */
       #share-text-block      { font-size: 0.78rem; }
-      /* Share action buttons */
-      .share-action-btn      { font-size: 0.7rem; }
+      .share-action-btn      { font-size: 0.88rem; padding: 10px 18px; min-width: 100px; }
 
       /* Settings menu */
       .slider-group label    { font-size: 0.82rem; }
@@ -1200,7 +1228,7 @@
         <input type="text" id="profile-country-field" placeholder="Search country…" autocomplete="off">
         <div id="profile-country-dropdown" class="profile-country-dropdown" role="listbox"></div>
       </div>
-      <button id="profile-start-btn">Start Game</button>
+      <button id="profile-start-btn">Save and Play Game</button>
     </div>
   </div>
 
@@ -2513,9 +2541,9 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             playerId: currentPlayer.playerId,
-            displayName: currentPlayer.displayName,
-            avatar: currentPlayer.avatar || null,
-            country: currentPlayer.country || null
+            displayName: name,
+            avatar: pendingAvatar || currentPlayer.avatar || null,
+            country: countryCode || currentPlayer.country || null
           })
         });
       } catch (_) {}
